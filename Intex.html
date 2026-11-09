@@ -79,10 +79,23 @@ select.field option{background:var(--surface2)}
 .btn.main{background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:0 0 18px rgba(155,92,255,.5)}
 .btn:disabled{opacity:.6}
 .err{color:#ff7a9a;font-size:.82rem;margin-top:10px;min-height:1em}
-.premium{text-align:center}
-.premium .crown{font-size:3rem;filter:drop-shadow(0 0 14px var(--neon))}
-.premium p{color:var(--muted);margin:10px 0 18px;line-height:1.5}
-.premium p b{color:var(--neon)}
+.vip{color:#ffd76a}
+
+/* Pantalla Premium */
+.sheet.premium{text-align:center;position:relative;overflow:hidden;border-color:#3b2f66;background:radial-gradient(120% 70% at 50% 0%,rgba(155,92,255,.28),transparent 60%),var(--surface)}
+.pbadge{width:76px;height:76px;margin:2px auto 10px;border-radius:50%;display:grid;place-items:center;font-size:2.3rem;background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:0 0 0 6px rgba(155,92,255,.18),0 0 34px rgba(57,255,136,.45);animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 10px rgba(155,92,255,.1),0 0 46px rgba(57,255,136,.7)}}
+.ptag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.14em;color:var(--neon);border:1px solid var(--neon);padding:4px 12px;border-radius:99px;margin-bottom:12px}
+.premium h3{font-size:1.45rem;line-height:1.2}
+.premium .psub{color:var(--muted);font-size:.92rem;line-height:1.5;margin:10px 4px 14px}
+.premium .psub b{color:var(--text)}
+.pprice{display:flex;align-items:flex-start;justify-content:center;gap:4px;font-size:3.4rem;font-weight:700;line-height:1;color:var(--neon);text-shadow:0 0 22px rgba(57,255,136,.45)}
+.pprice span{font-size:1.2rem;margin-top:8px}
+.pprice small{align-self:flex-end;font-size:.95rem;color:var(--muted);font-weight:500;margin-bottom:6px;text-shadow:none}
+.pperks{list-style:none;text-align:left;margin:18px 0;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;display:grid;gap:10px;font-size:.95rem}
+.pcol{display:grid;gap:10px}
+.pcta{padding:16px;font-size:1.02rem;background:var(--neon);color:#07140d;box-shadow:0 0 26px rgba(57,255,136,.45)}
+.pcta:active{transform:scale(.98)}
 .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--neon);color:#07140d;font-weight:700;padding:11px 20px;border-radius:99px;z-index:60;transition:.3s;pointer-events:none;text-align:center;max-width:90%}
 .toast.show{opacity:1;transform:translateX(-50%)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -174,15 +187,22 @@ select.field option{background:var(--surface2)}
   </div>
 </div>
 
-<!-- Límite gratis -->
+<!-- Límite gratis → Premium -->
 <div class="overlay" id="premiumOv">
   <div class="sheet premium">
-    <div class="crown">👑</div>
+    <div class="pbadge">👑</div>
+    <div class="ptag">TG SHOP. PREMIUM</div>
     <h3>Límite gratis alcanzado</h3>
-    <p>Has alcanzado el límite gratis. <b>Activa tu Clóset/Tienda Ilimitada Premium por S/.10 al mes</b> y publica todo lo que quieras.</p>
-    <div class="actions">
+    <p class="psub">Has alcanzado el límite gratis. <b>Activa tu Clóset/Tienda Ilimitada Premium por S/.10 al mes.</b></p>
+    <div class="pprice"><span>S/.</span>10<small>/ mes</small></div>
+    <ul class="pperks">
+      <li>✨ Publica todos los productos que quieras</li>
+      <li>👑 Insignia Premium en tus anuncios</li>
+      <li>🔥 Pregunta por Joyas de la Semana</li>
+    </ul>
+    <div class="pcol">
+      <button class="btn pcta" id="premiumGo">💬 Activar Premium por WhatsApp</button>
       <button class="btn ghost" id="premiumClose">Ahora no</button>
-      <button class="btn main" id="premiumGo">Activar Premium</button>
     </div>
   </div>
 </div>
@@ -202,8 +222,16 @@ const firebaseConfig = {
   messagingSenderId: "1041378328438",
   appId: "1:1041378328438:web:8896b98c7de739918c0457"
 };
-const ADMIN_WA = "51976621092";   // recibe los pedidos de Premium
+
+const ADMIN_WA = "51976621092";   // a este número llegan los pedidos de Premium
 const FREE_LIMIT = 3;
+
+// Vendedores con publicaciones ILIMITADAS (sin pagar). Agrega más números con código 51.
+const VIP_NUMBERS = [
+  "51997702550",   // Mi novia
+  "51960715888",   // Su amiga
+  "51976621092"    // Administrador
+];
 
 const DEFAULT_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b1d7a"/><stop offset="1" stop-color="#0f5a3a"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><text x="200" y="185" font-size="110" text-anchor="middle">🛍️</text></svg>');
@@ -225,7 +253,10 @@ function toast(msg) {
 function showNotice(html) { const n = $('#notice'); n.innerHTML = html; n.hidden = false; }
 
 let products = [], category = 'Todo', photoFile = null;
-let uid = null, isPremium = false, profile = null;
+let uid = null, premiumDoc = false, profile = null;
+
+// Ilimitado si tiene Premium en Firestore o si su número está en la lista VIP
+const isPremium = () => premiumDoc || (!!profile && VIP_NUMBERS.includes(profile.wa));
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -257,7 +288,7 @@ async function init() {
     showNotice('⚠️ No se pudo iniciar sesión (' + esc(code) + ').' + help);
     return false;
   }
-  try { const s = await getDoc(doc(db, 'users', uid)); isPremium = !!(s.exists() && s.data().premium); } catch {}
+  try { const s = await getDoc(doc(db, 'users', uid)); premiumDoc = !!(s.exists() && s.data().premium); } catch {}
   try { const p = await getDoc(doc(db, 'profiles', uid)); profile = p.exists() ? p.data() : null; } catch {}
   if (!profile) openProfile(false);   // primera vez: pedir nombre y WhatsApp
   render();
@@ -270,7 +301,7 @@ onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')),
   e => { $('#grid').innerHTML = '<div class="empty">No se pudieron cargar los productos.</div>'; showNotice('⚠️ Error al leer la nube (' + esc(e.code || e.message) + '). Revisa las reglas de Firestore.'); });
 
 const mine = () => products.filter(p => p.ownerId === uid);
-const limitReached = () => !isPremium && mine().length >= FREE_LIMIT;
+const limitReached = () => !isPremium() && mine().length >= FREE_LIMIT;
 
 function render() {
   const term = $('#q').value.trim().toLowerCase();
@@ -278,8 +309,8 @@ function render() {
     (category === 'Todo' || p.cat === category) &&
     (!term || (p.name + ' ' + p.cat).toLowerCase().includes(term)));
 
-  $('#count').textContent = isPremium ? '∞' : mine().length;
-  $('#who').textContent = profile ? profile.name : 'Mi perfil';
+  $('#count').textContent = isPremium() ? '∞' : mine().length;
+  $('#who').textContent = profile ? (isPremium() ? '👑 ' : '') + profile.name : 'Mi perfil';
 
   const gems = products.filter(p => p.gem);
   $('#gemsWrap').hidden = !gems.length;
@@ -300,7 +331,7 @@ function render() {
       </div>
       <div class="body">
         <div class="row"><div class="name">${esc(p.name)}</div><div class="price">${money(p.price)}</div></div>
-        <div class="meta">${esc(p.size || 'Sin medida')} · ${esc(p.cat)}${p.sellerName ? ' · Vende: ' + esc(p.sellerName) : ''}</div>
+        <div class="meta">${esc(p.size || 'Sin medida')} · ${esc(p.cat)}${p.sellerName ? ' · Vende: ' + esc(p.sellerName) : ''}${p.vip ? ' <span class="vip">👑</span>' : ''}</div>
         <button class="wa" data-wa="${p.id}">💬 Contactar por WhatsApp</button>
       </div>
     </article>`).join('') : '<div class="empty">Aún no hay productos aquí. ¡Sé el primero en publicar con el botón 📷!</div>';
@@ -376,7 +407,8 @@ $('#fab').addEventListener('click', async () => {
 $('#cancel').addEventListener('click', () => close('#formOv'));
 $('#premiumClose').addEventListener('click', () => close('#premiumOv'));
 $('#premiumGo').addEventListener('click', () => {
-  window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent('Hola, quiero activar TG SHOP Premium (S/.10 al mes). Mi ID: ' + (uid || ''))}`, '_blank', 'noopener');
+  const texto = `Hola 👋 quiero activar TG SHOP Premium 👑 (S/.10 al mes).\nNombre: ${profile?.name || '-'}\nMi ID: ${uid || '-'}`;
+  window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener');
 });
 document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
   if (e.target !== o) return;
@@ -439,6 +471,7 @@ $('#publish').addEventListener('click', async () => {
       cat: $('#fCat').value, state: $('#fState').value,
       size: $('#fSize').value.trim(),
       wa: profile.wa, sellerName: profile.name,   // se toma del perfil guardado
+      vip: isPremium(),                           // muestra la insignia 👑
       ownerId: uid, gem: false, createdAt: serverTimestamp()
     });
     ['#fName', '#fPrice', '#fSize'].forEach(s => $(s).value = '');
