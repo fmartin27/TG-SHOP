@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b14">
 <title>TG SHOP. · Compra y vende</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0b14;--surface:#171424;--surface2:#1f1b30;--line:#2c2742;--text:#f1eefb;--muted:#9a94b5;--purple:#9b5cff;--purple-d:#6d33db;--neon:#39ff88;--radius:20px}
@@ -19,9 +22,11 @@ header{position:sticky;top:0;z-index:20;padding:calc(14px + env(safe-area-inset-
 .tr{display:flex;align-items:center;gap:8px;min-width:0}
 .logo{font-size:1.45rem;font-weight:700;letter-spacing:-.02em}
 .logo span{color:var(--neon)}
-.counter{font-size:.78rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:6px 11px;border-radius:99px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.counter{font-size:.78rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:6px 11px;border-radius:99px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
 .counter b{color:var(--neon)}
-.help{flex:none;width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--purple);font-size:1rem;box-shadow:0 0 12px rgba(155,92,255,.4)}
+.help{position:relative;flex:none;width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--purple);font-size:1rem;box-shadow:0 0 12px rgba(155,92,255,.4)}
+.help[hidden]{display:none}
+.cnt{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:#ff5d7a;color:#fff;font-size:.65rem;font-weight:700;display:grid;place-items:center;padding:0 4px}
 .search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 14px;transition:.2s}
 .search:focus-within{border-color:var(--purple);box-shadow:0 0 0 3px rgba(155,92,255,.2)}
 .search input{flex:1;background:none;border:0;outline:0;padding:13px 0;font-size:1rem}
@@ -32,6 +37,7 @@ header{position:sticky;top:0;z-index:20;padding:calc(14px + env(safe-area-inset-
 .chip.active{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 0 18px rgba(155,92,255,.5)}
 main{padding:0 16px}
 h2{font-size:1.15rem;margin:22px 0 12px}
+h4{font-size:1.02rem;margin:18px 0 6px}
 .notice{margin-top:14px;padding:12px 14px;border-radius:14px;background:#2a1220;border:1px solid #ff7a9a;color:#ffb3c6;font-size:.88rem;line-height:1.45}
 .gems{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-width:none}
 .gems::-webkit-scrollbar{display:none}
@@ -58,9 +64,8 @@ h2{font-size:1.15rem;margin:22px 0 12px}
 .meta{color:var(--muted);font-size:.88rem;margin:6px 0 14px}
 .wa{width:100%;padding:14px;border-radius:14px;font-weight:700;font-size:1rem;color:#07140d;background:var(--neon);box-shadow:0 0 20px rgba(57,255,136,.35);transition:transform .15s}
 .wa:active{transform:scale(.97)}
-.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.mini.one{grid-template-columns:1fr}
-.mini button{padding:10px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-size:.85rem;color:var(--muted);font-weight:500}
+.mini{display:flex;gap:8px;margin-top:10px}
+.mini button{flex:1;padding:10px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-size:.85rem;color:var(--muted);font-weight:500}
 .mini button:active{transform:scale(.97)}
 .empty{text-align:center;color:var(--muted);padding:50px 10px}
 .fab{position:fixed;right:max(18px,calc(50% - 242px));bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:30;width:66px;height:66px;border-radius:50%;font-size:1.8rem;background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:0 0 0 4px rgba(155,92,255,.25),0 10px 30px rgba(155,92,255,.6)}
@@ -115,6 +120,13 @@ select.field option{background:var(--surface2)}
 .rules li span{font-size:1.4rem}
 .rulesnote{color:var(--muted);font-size:.85rem;line-height:1.5}
 
+/* Panel admin */
+.rep{padding:12px 14px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;margin-top:10px;font-size:.9rem;line-height:1.45}
+.rep small{color:var(--muted)}
+.rep .acts{display:flex;gap:8px;margin-top:10px}
+.rep .acts button{flex:1;padding:9px 4px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:.8rem}
+.rep .acts .danger{border-color:#ff5d7a;color:#ff9db0}
+
 /* Visor de fotos */
 .viewer{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.96);display:none;align-items:center;justify-content:center}
 .viewer.open{display:flex}
@@ -136,6 +148,7 @@ select.field option{background:var(--surface2)}
   <div class="top">
     <div class="logo">TG SHOP<span>.</span></div>
     <div class="tr">
+      <button class="help" id="adminBtn" aria-label="Panel de administrador" hidden>🛡️<span class="cnt" id="repCount" hidden>0</span></button>
       <button class="help" id="helpBtn" aria-label="Consultas y reglas">❓</button>
       <button class="counter" id="profileBtn" aria-label="Mi perfil">👤 Ingresar</button>
     </div>
@@ -296,12 +309,30 @@ select.field option{background:var(--surface2)}
   </div>
 </div>
 
+<!-- Panel de administrador -->
+<div class="overlay" id="adminOv">
+  <div class="sheet">
+    <h3>🛡️ Panel de administrador</h3>
+    <h4 id="repTitle">🚩 Reportes</h4>
+    <div id="repList"></div>
+    <h4>👑 Premium por ID</h4>
+    <p class="sub">Pega el ID del usuario (te llega en el mensaje de WhatsApp).</p>
+    <input class="field" id="premId" placeholder="ID del usuario">
+    <div class="actions">
+      <button class="btn ghost" id="premOff">Quitar Premium</button>
+      <button class="btn main" id="premOn">Activar Premium</button>
+    </div>
+    <div class="err" id="admErr"></div>
+    <button class="link" id="adminClose">Cerrar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, getDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, getDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyARknVaSORri6L3QQ0mfIUAGE8jVauMVvU",
@@ -315,7 +346,8 @@ const firebaseConfig = {
 // (Ya no se usa: las fotos se guardan reducidas dentro de Firestore, sin ImgBB)
 const IMGBB_KEY = "6d207e02198a847aa98d0a2a901485a5";
 
-const ADMIN_WA = "51976621092";   // a este número llegan los pedidos de Premium y las consultas
+const ADMIN_WA = "51976621092";             // a este número llegan los pedidos de Premium y las consultas
+const ADMIN_EMAIL = "fmhn2799@gmail.com";   // correo de Google del administrador (también va en las reglas de Firestore)
 const FREE_LIMIT = 3;
 
 // Vendedoras con publicaciones ILIMITADAS (sin pagar). Agrega más números con código 51.
@@ -354,13 +386,16 @@ function showNotice(html) { const n = $('#notice'); n.innerHTML = html; n.hidden
 $('#chips').innerHTML = CATS.map((c, i) => `<button class="chip${i ? '' : ' active'}" data-cat="${c}">${c}</button>`).join('');
 $('#fCat').innerHTML = CATS.slice(1).map(c => `<option>${c}</option>`).join('');
 
-let products = [], category = 'Todo', photoFile = null, reportId = null;
+let products = [], reports = [], unsubReports = null;
+let category = 'Todo', photoFile = null, reportId = null;
 let user = null, uid = null, premiumDoc = false, profile = null;
 let pendingP = new URLSearchParams(location.search).get('p');   // enlace compartido de un producto
 const BASE_URL = location.origin + location.pathname;
 
 // Ilimitado si tiene Premium en Firestore o si su número está en UNLIMITED_WA
 const isPremium = () => premiumDoc || (!!profile && UNLIMITED_WA.includes(profile.wa));
+// Administrador: solo con la cuenta de Google verificada (las reglas de Firestore lo vuelven a comprobar)
+const isAdmin = () => !!user && user.emailVerified === true && (user.email || '').toLowerCase() === ADMIN_EMAIL;
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -372,13 +407,20 @@ let readyResolve; const authReady = new Promise(r => readyResolve = r);
 onAuthStateChanged(auth, async u => {
   if (u && u.isAnonymous) { try { await signOut(auth); } catch {} return; }   // sesiones anónimas viejas
   user = u; uid = u ? u.uid : null; premiumDoc = false; profile = null;
+  if (unsubReports) { unsubReports(); unsubReports = null; }
+  reports = [];
   if (u) {
     close('#loginOv');
     try { const s = await getDoc(doc(db, 'users', uid)); premiumDoc = !!(s.exists() && s.data().premium); } catch {}
     try { const p = await getDoc(doc(db, 'profiles', uid)); profile = p.exists() ? p.data() : null; } catch {}
     if (!profile) openProfile(false);   // primera vez: pedir nombre y WhatsApp
+    if (isAdmin()) {
+      unsubReports = onSnapshot(query(collection(db, 'reports'), orderBy('createdAt', 'desc')),
+        snap => { reports = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); renderAdmin(); },
+        e => toast('No se pudieron leer los reportes (' + (e.code || e.message) + ')'));
+    }
   } else {
-    close('#profileOv'); close('#formOv'); close('#premiumOv');
+    close('#profileOv'); close('#formOv'); close('#premiumOv'); close('#adminOv');
   }
   render(); readyResolve();
 });
@@ -411,10 +453,14 @@ function render() {
   const list = products.filter(p =>
     (category === 'Todo' || p.cat === category) &&
     (!term || (p.name + ' ' + p.cat).toLowerCase().includes(term)));
+  const adm = isAdmin();
 
   $('#profileBtn').innerHTML = user
     ? `👤 ${isPremium() ? '👑 ' : ''}${esc(profile ? profile.name : 'Mi perfil')} · <b>${isPremium() ? '∞' : mine().length}</b>/3`
     : '👤 Ingresar';
+  $('#adminBtn').hidden = !adm;
+  $('#repCount').hidden = !(adm && reports.length);
+  $('#repCount').textContent = reports.length;
 
   const gems = products.filter(p => p.gem);
   $('#gemsWrap').hidden = !gems.length;
@@ -433,15 +479,16 @@ function render() {
       <div class="photo">
         <img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" data-zoom="${p.id}">
         <span class="state ${esc(p.state).replace(' ', '-')}">${esc(p.state)}</span>
-        ${own ? `<button class="del" data-del="${p.id}" aria-label="Eliminar">🗑</button>` : ''}
+        ${(own || adm) ? `<button class="del" data-del="${p.id}" aria-label="Eliminar">🗑</button>` : ''}
       </div>
       <div class="body">
         <div class="row"><div class="name">${esc(p.name)}</div><div class="price">${money(p.price)}</div></div>
         <div class="meta">${esc(p.size || 'Sin medida')} · ${esc(p.cat)}${p.sellerName ? ' · Vende: ' + esc(p.sellerName) : ''}${p.vip ? ' <span class="vip">👑</span>' : ''}</div>
         <button class="wa" data-wa="${p.id}">💬 Contactar por WhatsApp</button>
-        <div class="mini${own ? ' one' : ''}">
+        <div class="mini">
           <button data-share="${p.id}">🔗 Compartir</button>
-          ${own ? '' : `<button data-report="${p.id}">🚩 Reportar</button>`}
+          ${adm ? `<button data-gem="${p.id}">${p.gem ? '⭐ Quitar destacado' : '⭐ Destacar'}</button>`
+                : (own ? '' : `<button data-report="${p.id}">🚩 Reportar</button>`)}
         </div>
       </div>
     </article>`;
@@ -456,6 +503,39 @@ function render() {
     }
   }
 }
+
+/* ---------- Panel de administrador ---------- */
+function renderAdmin() {
+  if (!isAdmin()) return;
+  $('#repTitle').textContent = `🚩 Reportes (${reports.length})`;
+  $('#repList').innerHTML = reports.length ? reports.map(r => {
+    const f = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleDateString('es-PE') : '';
+    return `<div class="rep">
+      <b>${esc(r.productName || 'Anuncio')}</b><br>
+      ${esc(r.reason)}<br>
+      <small>Vendedor: ${esc(r.sellerName || '-')} · ${esc(r.sellerWa || '')} · ${esc(f)}</small>
+      <div class="acts">
+        <button data-rview="${r.id}">👁 Ver</button>
+        <button class="danger" data-rdel="${r.id}">🗑 Borrar anuncio</button>
+        <button data-rdis="${r.id}">✔ Descartar</button>
+      </div>
+    </div>`;
+  }).join('') : '<p class="sub">No hay reportes pendientes. 🎉</p>';
+}
+$('#adminBtn').addEventListener('click', () => { renderAdmin(); $('#admErr').textContent = ''; open('#adminOv'); });
+$('#adminClose').addEventListener('click', () => close('#adminOv'));
+
+async function setPremium(value) {
+  const id = $('#premId').value.trim(), err = $('#admErr');
+  err.textContent = '';
+  if (!id || id.includes('/')) return err.textContent = 'Pega un ID válido.';
+  try {
+    await setDoc(doc(db, 'users', id), { premium: value }, { merge: true });
+    toast(value ? '👑 Premium activado' : 'Premium quitado'); $('#premId').value = '';
+  } catch (e) { err.textContent = 'No se pudo guardar (' + (e.code || e.message) + ').'; }
+}
+$('#premOn').addEventListener('click', () => setPremium(true));
+$('#premOff').addEventListener('click', () => setPremium(false));
 
 /* ---------- Visor de fotos ---------- */
 function openViewer(id) {
@@ -480,18 +560,56 @@ async function share({ title, text, url }) {
 document.addEventListener('click', async e => {
   const z = e.target.closest('[data-zoom]');
   if (z) { openViewer(z.dataset.zoom); return; }
+
   const s = e.target.closest('[data-share]');
   if (s) {
     const p = products.find(x => x.id === s.dataset.share); if (!p) return;
     share({ title: p.name + ' · TG SHOP.', text: `${p.name} por ${money(p.price)} en TG SHOP. 🛍️`, url: BASE_URL + '?p=' + p.id });
     return;
   }
+
+  const g = e.target.closest('[data-gem]');
+  if (g && isAdmin()) {
+    const p = products.find(x => x.id === g.dataset.gem); if (!p) return;
+    try { await updateDoc(doc(db, 'products', p.id), { gem: !p.gem }); toast(p.gem ? 'Quitado de Joyas' : '⭐ Destacado en Joyas de la Semana'); }
+    catch (err) { toast('No se pudo cambiar: ' + (err.code || err.message)); }
+    return;
+  }
+
   const r = e.target.closest('[data-report]');
   if (r) {
     await authReady;
     if (!user) { open('#loginOv'); return; }
     reportId = r.dataset.report; $('#rErr').textContent = ''; open('#reportOv'); return;
   }
+
+  // Acciones del panel de administrador
+  const rv = e.target.closest('[data-rview]');
+  if (rv && isAdmin()) {
+    const rep = reports.find(x => x.id === rv.dataset.rview);
+    if (!rep || !products.find(p => p.id === rep.productId)) return toast('Ese anuncio ya no existe');
+    close('#adminOv'); category = 'Todo'; $('#q').value = '';
+    document.querySelectorAll('.chip').forEach((x, i) => x.classList.toggle('active', i === 0));
+    pendingP = rep.productId; render(); return;
+  }
+  const rd = e.target.closest('[data-rdel]');
+  if (rd && isAdmin()) {
+    const rep = reports.find(x => x.id === rd.dataset.rdel); if (!rep) return;
+    if (!confirm('¿Borrar el anuncio "' + (rep.productName || '') + '"?')) return;
+    try {
+      await deleteDoc(doc(db, 'products', rep.productId));
+      await deleteDoc(doc(db, 'reports', rep.id));
+      toast('Anuncio eliminado');
+    } catch (err) { toast('No se pudo borrar: ' + (err.code || err.message)); }
+    return;
+  }
+  const rs = e.target.closest('[data-rdis]');
+  if (rs && isAdmin()) {
+    try { await deleteDoc(doc(db, 'reports', rs.dataset.rdis)); toast('Reporte descartado'); }
+    catch (err) { toast('No se pudo descartar: ' + (err.code || err.message)); }
+    return;
+  }
+
   const w = e.target.closest('[data-wa]');
   if (w) {
     const p = products.find(x => x.id === w.dataset.wa); if (!p) return;
@@ -500,6 +618,7 @@ document.addEventListener('click', async e => {
     window.open(`https://wa.me/${p.wa}?text=${msg}`, '_blank', 'noopener');
     return;
   }
+
   const d = e.target.closest('[data-del]');
   if (d && confirm('¿Eliminar este anuncio?')) {
     try { await deleteDoc(doc(db, 'products', d.dataset.del)); toast('Anuncio eliminado'); }
@@ -664,5 +783,6 @@ $('#publish').addEventListener('click', async () => {
 
 render();
 </script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>
