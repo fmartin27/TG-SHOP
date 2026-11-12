@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0b14">
+<title>TG SHOP. · Compra y vende</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0b14;--surface:#171424;--surface2:#1f1b30;--line:#2c2742;--text:#f1eefb;--muted:#9a94b5;--purple:#9b5cff;--purple-d:#6d33db;--neon:#39ff88;--radius:20px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:150px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+header{position:sticky;top:0;z-index:20;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 12px;background:rgba(13,11,20,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.tr{display:flex;align-items:center;gap:8px;min-width:0}
+.logo{font-size:1.45rem;font-weight:700;letter-spacing:-.02em}
+.logo span{color:var(--neon)}
+.counter{font-size:.78rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:6px 11px;border-radius:99px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.counter b{color:var(--neon)}
+.help{flex:none;width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--purple);font-size:1rem;box-shadow:0 0 12px rgba(155,92,255,.4)}
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 14px;transition:.2s}
+.search:focus-within{border-color:var(--purple);box-shadow:0 0 0 3px rgba(155,92,255,.2)}
+.search input{flex:1;background:none;border:0;outline:0;padding:13px 0;font-size:1rem}
+.search input::placeholder{color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:9px 16px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--muted);font-weight:500;font-size:.92rem;transition:.2s;white-space:nowrap}
+.chip.active{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 0 18px rgba(155,92,255,.5)}
+main{padding:0 16px}
+h2{font-size:1.15rem;margin:22px 0 12px}
+.notice{margin-top:14px;padding:12px 14px;border-radius:14px;background:#2a1220;border:1px solid #ff7a9a;color:#ffb3c6;font-size:.88rem;line-height:1.45}
+.gems{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-width:none}
+.gems::-webkit-scrollbar{display:none}
+.gem{flex:none;width:78%;scroll-snap-align:start;position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--neon);box-shadow:0 0 22px rgba(57,255,136,.25);background:var(--surface);cursor:pointer}
+.gem img{width:100%;height:190px;object-fit:cover;display:block;cursor:zoom-in}
+.gem .badge{position:absolute;top:10px;left:10px;background:var(--neon);color:#07140d;font-weight:700;font-size:.72rem;padding:5px 10px;border-radius:99px;pointer-events:none}
+.gem .info{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.price{color:var(--neon);font-weight:700}
+.grid{display:grid;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;animation:pop .35s ease both;transition:box-shadow .3s}
+.card.flash{box-shadow:0 0 0 2px var(--neon),0 0 30px rgba(57,255,136,.5)}
+@keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.photo{position:relative}
+.photo img{width:100%;height:260px;object-fit:cover;display:block;background:var(--surface2);cursor:zoom-in}
+.state{position:absolute;top:12px;right:12px;font-size:.74rem;font-weight:700;padding:6px 11px;border-radius:99px;background:rgba(13,11,20,.78);backdrop-filter:blur(8px);border:1px solid var(--line);pointer-events:none}
+.state.Nuevo{color:var(--neon);border-color:var(--neon)}
+.state.Como-nuevo{color:#c9a7ff;border-color:var(--purple)}
+.state.Usado{color:var(--muted)}
+.del{position:absolute;top:12px;left:12px;width:36px;height:36px;border-radius:50%;background:rgba(13,11,20,.78);border:1px solid var(--line)}
+.body{padding:14px 16px 16px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.name{font-size:1.1rem;font-weight:700}
+.body .price{font-size:1.3rem;white-space:nowrap}
+.meta{color:var(--muted);font-size:.88rem;margin:6px 0 14px}
+.wa{width:100%;padding:14px;border-radius:14px;font-weight:700;font-size:1rem;color:#07140d;background:var(--neon);box-shadow:0 0 20px rgba(57,255,136,.35);transition:transform .15s}
+.wa:active{transform:scale(.97)}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mini.one{grid-template-columns:1fr}
+.mini button{padding:10px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-size:.85rem;color:var(--muted);font-weight:500}
+.mini button:active{transform:scale(.97)}
+.empty{text-align:center;color:var(--muted);padding:50px 10px}
+.fab{position:fixed;right:max(18px,calc(50% - 242px));bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:30;width:66px;height:66px;border-radius:50%;font-size:1.8rem;background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:0 0 0 4px rgba(155,92,255,.25),0 10px 30px rgba(155,92,255,.6)}
+.fab:active{transform:scale(.92)}
+.overlay{position:fixed;inset:0;z-index:40;background:rgba(5,4,10,.75);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.sheet{width:100%;max-width:520px;max-height:92vh;overflow-y:auto;background:var(--surface);border-radius:26px 26px 0 0;border:1px solid var(--line);padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px));animation:up .3s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet h3{font-size:1.3rem;margin-bottom:8px}
+.sheet .sub{color:var(--muted);font-size:.9rem;line-height:1.45;margin-bottom:6px}
+label{display:block;font-size:.85rem;color:var(--muted);margin:12px 0 6px}
+.field{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:13px 14px;outline:0;font-size:1rem}
+.field:focus{border-color:var(--purple)}
+select.field{appearance:none}
+select.field option{background:var(--surface2)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drop{display:flex;align-items:center;justify-content:center;height:190px;border:2px dashed var(--purple);border-radius:16px;color:var(--muted);overflow:hidden;position:relative;background:var(--surface2);text-align:center;padding:10px}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pickers{margin-top:10px}
+.actions{display:flex;gap:10px;margin-top:20px}
+.btn{flex:1;padding:14px;border-radius:14px;font-weight:700}
+.btn.ghost{background:var(--surface2);border:1px solid var(--line)}
+.btn.main{background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:0 0 18px rgba(155,92,255,.5)}
+.btn.block{display:block;width:100%;margin-top:10px}
+.btn:disabled{opacity:.6}
+.err{color:#ff7a9a;font-size:.82rem;margin-top:10px;min-height:1em;line-height:1.4}
+.vip{color:#ffd76a}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:15px;border-radius:14px;background:#fff;color:#1f1f1f;font-weight:700;font-size:1.02rem;margin-top:16px}
+.gbtn i{font-style:normal;font-weight:700;font-size:1.3rem;color:#4285f4}
+.center{text-align:center}
+.link{display:block;margin:14px auto 0;color:var(--muted);font-size:.85rem;text-decoration:underline}
+
+/* Pantalla Premium */
+.sheet.premium{text-align:center;position:relative;overflow:hidden;border-color:#3b2f66;background:radial-gradient(120% 70% at 50% 0%,rgba(155,92,255,.28),transparent 60%),var(--surface)}
+.pbadge{width:76px;height:76px;margin:2px auto 10px;border-radius:50%;display:grid;place-items:center;font-size:2.3rem;background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:0 0 0 6px rgba(155,92,255,.18),0 0 34px rgba(57,255,136,.45);animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 10px rgba(155,92,255,.1),0 0 46px rgba(57,255,136,.7)}}
+.ptag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.14em;color:var(--neon);border:1px solid var(--neon);padding:4px 12px;border-radius:99px;margin-bottom:12px}
+.premium h3{font-size:1.45rem;line-height:1.2}
+.premium .psub{color:var(--muted);font-size:.92rem;line-height:1.5;margin:10px 4px 14px}
+.premium .psub b{color:var(--text)}
+.pprice{display:flex;align-items:flex-start;justify-content:center;gap:4px;font-size:3.4rem;font-weight:700;line-height:1;color:var(--neon);text-shadow:0 0 22px rgba(57,255,136,.45)}
+.pprice span{font-size:1.2rem;margin-top:8px}
+.pprice small{align-self:flex-end;font-size:.95rem;color:var(--muted);font-weight:500;margin-bottom:6px;text-shadow:none}
+.pperks{list-style:none;text-align:left;margin:18px 0;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;display:grid;gap:10px;font-size:.95rem}
+.pcol{display:grid;gap:10px}
+.pcta{padding:16px;font-size:1.02rem;background:var(--neon);color:#07140d;box-shadow:0 0 26px rgba(57,255,136,.45)}
+.pcta:active{transform:scale(.98)}
+
+/* Reglas */
+.rules{list-style:none;display:grid;gap:10px;margin:14px 0}
+.rules li{display:flex;gap:12px;align-items:center;padding:12px 14px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;font-size:.95rem}
+.rules li span{font-size:1.4rem}
+.rulesnote{color:var(--muted);font-size:.85rem;line-height:1.5}
+
+/* Visor de fotos */
+.viewer{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.96);display:none;align-items:center;justify-content:center}
+.viewer.open{display:flex}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain}
+.vclose{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);font-size:1.4rem;color:#fff;z-index:2}
+
+/* Aviso legal fijo */
+.legal{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;z-index:25;padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(13,11,20,.95);border-top:1px solid var(--line);color:var(--muted);font-size:.68rem;line-height:1.35;text-align:center}
+.legal b{color:var(--text)}
+
+.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--neon);color:#07140d;font-weight:700;padding:11px 20px;border-radius:99px;z-index:90;transition:.3s;pointer-events:none;text-align:center;max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top">
+    <div class="logo">TG SHOP<span>.</span></div>
+    <div class="tr">
+      <button class="help" id="helpBtn" aria-label="Consultas y reglas">❓</button>
+      <button class="counter" id="profileBtn" aria-label="Mi perfil">👤 Ingresar</button>
+    </div>
+  </div>
+  <label class="search" aria-label="Buscar">
+    <span>🔍</span>
+    <input id="q" type="search" placeholder="Busca bicis, zapatillas, licuadoras…" autocomplete="off">
+  </label>
+  <div class="chips" id="chips"></div>
+  <div class="notice" id="notice" hidden></div>
+</header>
+
+<main>
+  <div id="gemsWrap" hidden>
+    <h2>🔥 Joyas de la Semana</h2>
+    <div class="gems" id="gems"></div>
+  </div>
+  <h2 id="listTitle">Recién publicado</h2>
+  <div class="grid" id="grid"><div class="empty">Cargando productos…</div></div>
+</main>
+
+<button class="fab" id="fab" aria-label="Subir producto">📷</button>
+
+<footer class="legal">
+  <b>TG SHOP.</b> es solo una plataforma de anuncios clasificados. No se hace responsable por la calidad, entrega, pagos o negociaciones entre usuarios.
+</footer>
+
+<!-- Visor de fotos -->
+<div class="viewer" id="viewer">
+  <button class="vclose" id="vclose" aria-label="Cerrar">✕</button>
+  <img id="vimg" alt="Foto del producto">
+</div>
+
+<!-- Iniciar sesión -->
+<div class="overlay" id="loginOv">
+  <div class="sheet center">
+    <h3>👋 Entra a TG SHOP.</h3>
+    <p class="sub">Inicia sesión con Google para vender, guardar tu perfil y reportar anuncios. Para ver productos no necesitas cuenta.</p>
+    <button class="gbtn" id="googleBtn"><i>G</i> Continuar con Google</button>
+    <div class="err" id="loginErr"></div>
+    <button class="link" id="loginClose">Ahora no</button>
+  </div>
+</div>
+
+<!-- Perfil (se pide una sola vez) -->
+<div class="overlay" id="profileOv">
+  <div class="sheet">
+    <h3 id="profTitle">👋 Bienvenido a TG SHOP.</h3>
+    <p class="sub">Para vender, regístrate una sola vez. Tu número se usará para que los compradores te escriban por WhatsApp.</p>
+    <label for="pName">Tu nombre</label>
+    <input class="field" id="pName" maxlength="30" placeholder="Ej: María">
+    <label for="pWa">Tu WhatsApp</label>
+    <input class="field" id="pWa" type="tel" inputmode="tel" placeholder="Ej: 987654321">
+    <div class="err" id="pErr"></div>
+    <div class="actions">
+      <button class="btn ghost" id="pCancel" hidden>Cancelar</button>
+      <button class="btn main" id="pSave">Guardar perfil</button>
+    </div>
+    <button class="link" id="pLogout">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- Subir producto -->
+<div class="overlay" id="formOv">
+  <div class="sheet">
+    <h3>📸 ¡Subir mi Producto!</h3>
+    <div class="drop" id="drop">
+      <img id="prev" alt="Vista previa" hidden>
+      <div id="dropHint"><div style="font-size:2.4rem">📷</div>Agrega una foto de tu producto</div>
+    </div>
+    <div class="two pickers">
+      <button class="btn ghost" id="btnCam" type="button">📸 Tomar foto</button>
+      <button class="btn ghost" id="btnGal" type="button">🖼️ Galería</button>
+    </div>
+    <input type="file" id="photoCam" accept="image/*" capture="environment" hidden>
+    <input type="file" id="photoGal" accept="image/*" hidden>
+
+    <label for="fName">Nombre del objeto</label>
+    <input class="field" id="fName" maxlength="40" placeholder="Ej: Casaca de cuero negra">
+    <label for="fCat">Categoría</label>
+    <select class="field" id="fCat"></select>
+    <div class="two">
+      <div><label for="fState">Estado</label>
+        <select class="field" id="fState"><option>Nuevo</option><option>Como nuevo</option><option selected>Usado</option></select></div>
+      <div><label for="fPrice">Precio (S/.)</label>
+        <input class="field" id="fPrice" type="number" min="1" inputmode="decimal" placeholder="80"></div>
+    </div>
+    <label for="fSize">Talla / medida</label>
+    <input class="field" id="fSize" maxlength="20" placeholder="M, 26”, 1.2 m…">
+    <div class="err" id="err"></div>
+    <div class="actions">
+      <button class="btn ghost" id="cancel">Cancelar</button>
+      <button class="btn main" id="publish">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Límite gratis → Premium -->
+<div class="overlay" id="premiumOv">
+  <div class="sheet premium">
+    <div class="pbadge">👑</div>
+    <div class="ptag">TG SHOP. PREMIUM</div>
+    <h3>Límite gratis alcanzado</h3>
+    <p class="psub">Has alcanzado el límite gratis. <b>Activa tu Tienda Ilimitada Premium por S/. 20 al mes</b> (publicaciones ilimitadas y 0% comisiones).</p>
+    <div class="pprice"><span>S/.</span>20<small>/ mes</small></div>
+    <ul class="pperks">
+      <li>✨ Publicaciones ilimitadas</li>
+      <li>💸 0% comisiones</li>
+      <li>👑 Insignia Premium en tus anuncios</li>
+    </ul>
+    <div class="pcol">
+      <button class="btn pcta" id="premiumGo">💬 Activar Premium por WhatsApp</button>
+      <button class="btn ghost" id="premiumClose">Ahora no</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reportar anuncio -->
+<div class="overlay" id="reportOv">
+  <div class="sheet">
+    <h3>🚩 Reportar anuncio</h3>
+    <p class="sub">Cuéntanos qué pasa con este anuncio y lo revisaremos.</p>
+    <label for="rReason">Motivo</label>
+    <select class="field" id="rReason">
+      <option>Contenido prohibido (armas, adultos, medicamentos, animales)</option>
+      <option>Posible estafa o engaño</option>
+      <option>Foto inapropiada o ilegal</option>
+      <option>Precio o datos falsos</option>
+      <option>Otro motivo</option>
+    </select>
+    <div class="err" id="rErr"></div>
+    <div class="actions">
+      <button class="btn ghost" id="rCancel">Cancelar</button>
+      <button class="btn main" id="rSend">Enviar reporte</button>
+    </div>
+  </div>
+</div>
+
+<!-- Consultas y reglas -->
+<div class="overlay" id="rulesOv">
+  <div class="sheet">
+    <h3>❓ Consultas y reglas</h3>
+    <p class="sub">En TG SHOP. está <b>estrictamente prohibido</b> publicar:</p>
+    <ul class="rules">
+      <li><span>🚫</span>Fotos o contenido ilegal</li>
+      <li><span>🔫</span>Armas de cualquier tipo</li>
+      <li><span>🔞</span>Contenido para adultos</li>
+      <li><span>💊</span>Medicamentos</li>
+      <li><span>🐾</span>Animales</li>
+      <li><span>⚠️</span>Estafas, engaños o anuncios falsos</li>
+    </ul>
+    <p class="rulesnote">Los anuncios que incumplan estas reglas serán eliminados. Tip: reúnete en lugares públicos y no envíes dinero por adelantado.</p>
+    <div class="actions">
+      <button class="btn ghost" id="rulesClose">Entendido</button>
+      <button class="btn main" id="askGo">💬 Hacer una consulta</button>
+    </div>
+    <button class="btn ghost block" id="shareApp">📲 Compartir TG SHOP.</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, getDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyARknVaSORri6L3QQ0mfIUAGE8jVauMVvU",
+  authDomain: "tg-shop-5a01f.firebaseapp.com",
+  projectId: "tg-shop-5a01f",
+  storageBucket: "tg-shop-5a01f.firebasestorage.app",
+  messagingSenderId: "1041378328438",
+  appId: "1:1041378328438:web:8896b98c7de739918c0457"
+};
+
+// (Ya no se usa: las fotos se guardan reducidas dentro de Firestore, sin ImgBB)
+const IMGBB_KEY = "6d207e02198a847aa98d0a2a901485a5";
+
+const ADMIN_WA = "51976621092";   // a este número llegan los pedidos de Premium y las consultas
+const FREE_LIMIT = 3;
+
+// Vendedoras con publicaciones ILIMITADAS (sin pagar). Agrega más números con código 51.
+const UNLIMITED_WA = [
+  "51997702550",   // Daniela
+  "51960715888",   // Karolay
+  "51976621092"    // Administrador
+];
+
+// Categorías (barra superior y formulario)
+const CATS = [
+  "Todo", "👗 Ropa Mujer", "👕 Ropa Hombre", "👟 Zapatillas y Calzado", "💍 Accesorios y Joyas",
+  "👜 Carteras y Mochilas", "📱 Celulares y Tech", "🔌 Electrodomésticos", "🛋️ Hogar y Muebles",
+  "🚲 Bicicletas y Movilidad", "🎮 Consolas y Juegos", "💄 Belleza y Perfumes", "✨ Otros"
+];
+
+const DEFAULT_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b1d7a"/><stop offset="1" stop-color="#0f5a3a"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><text x="200" y="185" font-size="110" text-anchor="middle">🛍️</text></svg>');
+
+document.addEventListener('error', e => {
+  if (e.target.tagName === 'IMG' && e.target.id !== 'prev' && e.target.id !== 'vimg' && e.target.src !== DEFAULT_IMG) e.target.src = DEFAULT_IMG;
+}, true);
+
+const $ = s => document.querySelector(s);
+const esc = s => { const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; };
+const money = n => 'S/. ' + Number(n).toLocaleString('es-PE');
+const open = id => $(id).classList.add('open');
+const close = id => $(id).classList.remove('open');
+let tt;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 3200);
+}
+function showNotice(html) { const n = $('#notice'); n.innerHTML = html; n.hidden = false; }
+
+$('#chips').innerHTML = CATS.map((c, i) => `<button class="chip${i ? '' : ' active'}" data-cat="${c}">${c}</button>`).join('');
+$('#fCat').innerHTML = CATS.slice(1).map(c => `<option>${c}</option>`).join('');
+
+let products = [], category = 'Todo', photoFile = null, reportId = null;
+let user = null, uid = null, premiumDoc = false, profile = null;
+let pendingP = new URLSearchParams(location.search).get('p');   // enlace compartido de un producto
+const BASE_URL = location.origin + location.pathname;
+
+// Ilimitado si tiene Premium en Firestore o si su número está en UNLIMITED_WA
+const isPremium = () => premiumDoc || (!!profile && UNLIMITED_WA.includes(profile.wa));
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+/* ---------- Sesión con Google ---------- */
+let readyResolve; const authReady = new Promise(r => readyResolve = r);
+
+onAuthStateChanged(auth, async u => {
+  if (u && u.isAnonymous) { try { await signOut(auth); } catch {} return; }   // sesiones anónimas viejas
+  user = u; uid = u ? u.uid : null; premiumDoc = false; profile = null;
+  if (u) {
+    close('#loginOv');
+    try { const s = await getDoc(doc(db, 'users', uid)); premiumDoc = !!(s.exists() && s.data().premium); } catch {}
+    try { const p = await getDoc(doc(db, 'profiles', uid)); profile = p.exists() ? p.data() : null; } catch {}
+    if (!profile) openProfile(false);   // primera vez: pedir nombre y WhatsApp
+  } else {
+    close('#profileOv'); close('#formOv'); close('#premiumOv');
+  }
+  render(); readyResolve();
+});
+
+$('#googleBtn').addEventListener('click', async () => {
+  const err = $('#loginErr'); err.textContent = '';
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+  catch (e) {
+    const c = e.code || e.message;
+    if (c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request') return;
+    let help = ' (' + c + ')';
+    if (c === 'auth/operation-not-allowed') help = ': activa Google en Firebase → Authentication → Método de acceso.';
+    if (c === 'auth/unauthorized-domain') help = ': agrega este dominio en Authentication → Configuración → Dominios autorizados.';
+    if (c === 'auth/popup-blocked') help = ': tu navegador bloqueó la ventana. Permite ventanas emergentes y vuelve a intentar.';
+    err.textContent = 'No se pudo iniciar sesión' + help;
+  }
+});
+$('#loginClose').addEventListener('click', () => close('#loginOv'));
+$('#pLogout').addEventListener('click', async () => { try { await signOut(auth); toast('Sesión cerrada'); } catch {} });
+
+onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')),
+  snap => { products = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
+  e => { $('#grid').innerHTML = '<div class="empty">No se pudieron cargar los productos.</div>'; showNotice('⚠️ Error al leer la nube (' + esc(e.code || e.message) + '). Revisa las reglas de Firestore.'); });
+
+const mine = () => products.filter(p => p.ownerId === uid);
+const limitReached = () => !isPremium() && mine().length >= FREE_LIMIT;
+
+function render() {
+  const term = $('#q').value.trim().toLowerCase();
+  const list = products.filter(p =>
+    (category === 'Todo' || p.cat === category) &&
+    (!term || (p.name + ' ' + p.cat).toLowerCase().includes(term)));
+
+  $('#profileBtn').innerHTML = user
+    ? `👤 ${isPremium() ? '👑 ' : ''}${esc(profile ? profile.name : 'Mi perfil')} · <b>${isPremium() ? '∞' : mine().length}</b>/3`
+    : '👤 Ingresar';
+
+  const gems = products.filter(p => p.gem);
+  $('#gemsWrap').hidden = !gems.length;
+  $('#gems').innerHTML = gems.map(p => `
+    <div class="gem" data-wa="${p.id}">
+      <span class="badge">🔥 Destacado</span>
+      <img src="${esc(p.img)}" alt="${esc(p.name)}" data-zoom="${p.id}">
+      <div class="info"><strong>${esc(p.name)}</strong><span class="price">${money(p.price)}</span></div>
+    </div>`).join('');
+
+  $('#listTitle').textContent = category === 'Todo' ? 'Recién publicado' : category;
+  $('#grid').innerHTML = list.length ? list.map(p => {
+    const own = p.ownerId === uid;
+    return `
+    <article class="card" id="p-${p.id}">
+      <div class="photo">
+        <img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" data-zoom="${p.id}">
+        <span class="state ${esc(p.state).replace(' ', '-')}">${esc(p.state)}</span>
+        ${own ? `<button class="del" data-del="${p.id}" aria-label="Eliminar">🗑</button>` : ''}
+      </div>
+      <div class="body">
+        <div class="row"><div class="name">${esc(p.name)}</div><div class="price">${money(p.price)}</div></div>
+        <div class="meta">${esc(p.size || 'Sin medida')} · ${esc(p.cat)}${p.sellerName ? ' · Vende: ' + esc(p.sellerName) : ''}${p.vip ? ' <span class="vip">👑</span>' : ''}</div>
+        <button class="wa" data-wa="${p.id}">💬 Contactar por WhatsApp</button>
+        <div class="mini${own ? ' one' : ''}">
+          <button data-share="${p.id}">🔗 Compartir</button>
+          ${own ? '' : `<button data-report="${p.id}">🚩 Reportar</button>`}
+        </div>
+      </div>
+    </article>`;
+  }).join('') : '<div class="empty">Aún no hay productos aquí. ¡Sé el primero en publicar con el botón 📷!</div>';
+
+  // Si abrieron un enlace compartido, ir directo a ese producto
+  if (pendingP) {
+    const el = document.getElementById('p-' + pendingP);
+    if (el) {
+      pendingP = null;
+      setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 4000); }, 150);
+    }
+  }
+}
+
+/* ---------- Visor de fotos ---------- */
+function openViewer(id) {
+  const p = products.find(x => x.id === id); if (!p) return;
+  $('#vimg').src = p.img;
+  $('#viewer').classList.add('open');
+}
+function closeViewer() { $('#viewer').classList.remove('open'); $('#vimg').removeAttribute('src'); }
+$('#vclose').addEventListener('click', closeViewer);
+$('#viewer').addEventListener('click', e => { if (e.target.id === 'viewer') closeViewer(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeViewer(); });
+
+/* ---------- Compartir ---------- */
+async function share({ title, text, url }) {
+  try {
+    if (navigator.share) { await navigator.share({ title, text, url }); return; }
+  } catch (e) { if (e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(url); toast('Enlace copiado 📋'); }
+  catch { prompt('Copia este enlace:', url); }
+}
+
+document.addEventListener('click', async e => {
+  const z = e.target.closest('[data-zoom]');
+  if (z) { openViewer(z.dataset.zoom); return; }
+  const s = e.target.closest('[data-share]');
+  if (s) {
+    const p = products.find(x => x.id === s.dataset.share); if (!p) return;
+    share({ title: p.name + ' · TG SHOP.', text: `${p.name} por ${money(p.price)} en TG SHOP. 🛍️`, url: BASE_URL + '?p=' + p.id });
+    return;
+  }
+  const r = e.target.closest('[data-report]');
+  if (r) {
+    await authReady;
+    if (!user) { open('#loginOv'); return; }
+    reportId = r.dataset.report; $('#rErr').textContent = ''; open('#reportOv'); return;
+  }
+  const w = e.target.closest('[data-wa]');
+  if (w) {
+    const p = products.find(x => x.id === w.dataset.wa); if (!p) return;
+    if (!p.wa) return toast('Este anuncio no tiene WhatsApp');
+    const msg = encodeURIComponent(`Hola, vi tu anuncio "${p.name}" (${money(p.price)}) en TG SHOP. ¿Sigue disponible?`);
+    window.open(`https://wa.me/${p.wa}?text=${msg}`, '_blank', 'noopener');
+    return;
+  }
+  const d = e.target.closest('[data-del]');
+  if (d && confirm('¿Eliminar este anuncio?')) {
+    try { await deleteDoc(doc(db, 'products', d.dataset.del)); toast('Anuncio eliminado'); }
+    catch (err) { toast('No se pudo eliminar: ' + (err.code || err.message)); }
+  }
+});
+
+$('#q').addEventListener('input', render);
+$('#chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active'); category = c.dataset.cat; render();
+});
+
+/* ---------- Reportar ---------- */
+$('#rCancel').addEventListener('click', () => close('#reportOv'));
+$('#rSend').addEventListener('click', async () => {
+  const p = products.find(x => x.id === reportId), btn = $('#rSend');
+  if (!p || !uid) return;
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, 'reports'), {
+      productId: p.id, productName: p.name, sellerName: p.sellerName || '', sellerWa: p.wa || '',
+      reason: $('#rReason').value, reporterId: uid, createdAt: serverTimestamp()
+    });
+    close('#reportOv'); toast('Gracias, revisaremos el anuncio 🙏');
+  } catch (e) { $('#rErr').textContent = 'No se pudo enviar (' + (e.code || e.message) + ').'; }
+  finally { btn.disabled = false; }
+});
+
+/* ---------- Reglas, consultas y compartir app ---------- */
+$('#helpBtn').addEventListener('click', () => open('#rulesOv'));
+$('#rulesClose').addEventListener('click', () => close('#rulesOv'));
+$('#askGo').addEventListener('click', () => {
+  window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent('Hola, tengo una consulta sobre TG SHOP.')}`, '_blank', 'noopener');
+});
+$('#shareApp').addEventListener('click', () => {
+  share({ title: 'TG SHOP.', text: 'Compra y vende ropa usada y más en TG SHOP. 🛍️', url: BASE_URL });
+});
+
+/* ---------- Perfil ---------- */
+function openProfile(editing) {
+  $('#profTitle').textContent = editing ? '👤 Mi perfil' : '👋 Bienvenido a TG SHOP.';
+  $('#pCancel').hidden = !editing;
+  $('#pName').value = profile?.name || (user?.displayName || '').split(' ')[0];
+  $('#pWa').value = profile?.wa ? profile.wa.replace(/^51/, '') : '';
+  $('#pErr').textContent = '';
+  open('#profileOv');
+}
+$('#profileBtn').addEventListener('click', async () => {
+  await authReady;
+  if (!user) return open('#loginOv');
+  openProfile(!!profile);
+});
+$('#pCancel').addEventListener('click', () => close('#profileOv'));
+
+function normalizeWa(raw) {
+  const d = raw.replace(/\D/g, '');
+  if (d.length === 9) return '51' + d;
+  if (d.length === 11 && d.startsWith('51')) return d;
+  return null;
+}
+$('#pSave').addEventListener('click', async () => {
+  const name = $('#pName').value.trim(), wa = normalizeWa($('#pWa').value), err = $('#pErr'), btn = $('#pSave');
+  if (name.length < 2) return err.textContent = 'Escribe tu nombre.';
+  if (!wa) return err.textContent = 'Ingresa un WhatsApp válido de 9 dígitos.';
+  err.textContent = ''; btn.disabled = true;
+  try {
+    await setDoc(doc(db, 'profiles', uid), { name, wa });
+    profile = { name, wa };
+    close('#profileOv'); render(); toast('Perfil guardado ✅');
+  } catch (e) { err.textContent = 'No se pudo guardar (' + (e.code || e.message) + '). Revisa las reglas de Firestore.'; }
+  finally { btn.disabled = false; }
+});
+
+/* ---------- Botón de cámara ---------- */
+$('#fab').addEventListener('click', async () => {
+  await authReady;
+  if (!user) return open('#loginOv');
+  if (!profile) return openProfile(false);
+  if (limitReached()) return open('#premiumOv');
+  open('#formOv');
+});
+$('#cancel').addEventListener('click', () => close('#formOv'));
+$('#premiumClose').addEventListener('click', () => close('#premiumOv'));
+$('#premiumGo').addEventListener('click', () => {
+  const texto = `Hola, quiero activar mi Tienda Ilimitada de S/. 20 en TG SHOP.\n\nNombre: ${profile?.name || '-'}\nCorreo: ${user?.email || '-'}\nMi ID: ${uid || '-'}`;
+  window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener');
+});
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
+  if (e.target !== o) return;
+  if (o.id === 'profileOv' && user && !profile) return;   // el registro inicial no se puede saltar
+  o.classList.remove('open');
+}));
+
+/* ---------- Fotos (cámara o galería) ---------- */
+$('#btnCam').addEventListener('click', () => $('#photoCam').click());
+$('#btnGal').addEventListener('click', () => $('#photoGal').click());
+function onPhoto(e) {
+  const f = e.target.files[0]; if (!f) return;
+  photoFile = f;
+  $('#prev').src = URL.createObjectURL(f);
+  $('#prev').hidden = false; $('#dropHint').hidden = true;
+}
+$('#photoCam').addEventListener('change', onPhoto);
+$('#photoGal').addEventListener('change', onPhoto);
+function resetPhoto() {
+  photoFile = null; $('#photoCam').value = ''; $('#photoGal').value = '';
+  $('#prev').hidden = true; $('#prev').removeAttribute('src'); $('#dropHint').hidden = false;
+}
+
+// Reduce la foto a ~900px y la convierte a texto (JPEG) para guardarla en Firestore (gratis)
+function photoToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, 900 / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      let q = 0.75, out = c.toDataURL('image/jpeg', q);
+      while (out.length > 600000 && q > 0.3) { q -= 0.1; out = c.toDataURL('image/jpeg', q); }
+      if (out.length > 900000) reject(new Error('La foto es muy pesada, intenta con otra'));
+      else resolve(out);
+    };
+    img.onerror = () => reject(new Error('No se pudo leer la foto'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* ---------- Publicar ---------- */
+$('#publish').addEventListener('click', async () => {
+  const err = $('#err'), btn = $('#publish');
+  const name = $('#fName').value.trim(), price = parseFloat($('#fPrice').value);
+
+  if (!user) { close('#formOv'); return open('#loginOv'); }
+  if (limitReached()) { close('#formOv'); return open('#premiumOv'); }
+  if (!profile) { close('#formOv'); return openProfile(false); }
+  if (!photoFile) return err.textContent = 'Toma o elige una foto de tu producto.';
+  if (!name) return err.textContent = 'Escribe el nombre del objeto.';
+  if (!(price > 0)) return err.textContent = 'Ingresa un precio válido en soles.';
+
+  err.textContent = ''; btn.disabled = true; btn.textContent = 'Preparando foto…';
+  try {
+    const img = await photoToDataURL(photoFile);
+    btn.textContent = 'Publicando…';
+    await addDoc(collection(db, 'products'), {
+      name, price, img,
+      cat: $('#fCat').value, state: $('#fState').value,
+      size: $('#fSize').value.trim(),
+      wa: profile.wa, sellerName: profile.name,   // se toma del perfil guardado
+      vip: isPremium(),                           // muestra la insignia 👑
+      ownerId: uid, gem: false, createdAt: serverTimestamp()
+    });
+    ['#fName', '#fPrice', '#fSize'].forEach(s => $(s).value = '');
+    resetPhoto();
+    close('#formOv'); toast('¡Publicado! 🎉');
+  } catch (e) {
+    err.textContent = 'No se pudo publicar: ' + (e.code || e.message);
+  } finally { btn.disabled = false; btn.textContent = 'Publicar'; }
+});
+
+render();
+</script>
+</body>
+</html>
